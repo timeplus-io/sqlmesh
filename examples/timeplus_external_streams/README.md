@@ -25,8 +25,8 @@ This example demonstrates **multi-gateway orchestration** with SQLMesh managing 
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install timeplus-sqlmesh from PyPI
-pip install timeplus-sqlmesh
+# Install timeplus-sqlmesh with ClickHouse support
+pip install "timeplus-sqlmesh[clickhouse]"
 
 # Install Kafka library for data generation
 pip install kafka-python
@@ -38,9 +38,12 @@ pip install kafka-python
 # Verify installation
 sqlmesh --version
 
-# Verify Timeplus adapter is available
+# Verify adapters are available
 python -c "from sqlmesh.core.engine_adapter import TimeplusEngineAdapter; print('✓ Timeplus adapter loaded')"
+python -c "from sqlmesh.core.engine_adapter import ClickhouseEngineAdapter; print('✓ ClickHouse adapter loaded')"
 ```
+
+**Note**: This example uses both Timeplus and ClickHouse gateways, so the `[clickhouse]` extra is required.
 
 ### Step 3: Get the Example Files
 
@@ -202,7 +205,7 @@ SQLMesh automatically determines the correct order based on `depends_on`:
 
 - Docker & Docker Compose
 - Python 3.9+
-- timeplus-sqlmesh (`pip install timeplus-sqlmesh`)
+- timeplus-sqlmesh with ClickHouse support (`pip install "timeplus-sqlmesh[clickhouse]"`)
 - kafka-python (for data generation)
 
 ## Deployment Commands

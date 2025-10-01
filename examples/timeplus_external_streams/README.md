@@ -30,6 +30,8 @@ pip install "timeplus-sqlmesh[clickhouse]"
 
 # Install Kafka library for data generation
 pip install kafka-python
+
+pip install timeplus-connect
 ```
 
 ### Step 2: Verify Installation

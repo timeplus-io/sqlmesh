@@ -52,7 +52,7 @@ echo -e "${BLUE}[Step 3/9]${NC} Starting Docker containers..."
 docker compose up -d
 
 echo "Waiting for services to be ready..."
-sleep 10
+sleep 5
 echo -e "${GREEN}✓${NC} All containers started"
 echo
 

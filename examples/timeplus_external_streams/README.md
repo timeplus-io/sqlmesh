@@ -87,18 +87,25 @@ cd examples/timeplus_external_streams
 # 1. Start infrastructure
 docker compose up -d
 
-# Wait ~10 seconds for services to be ready
-sleep 10
+# 2. Wait for services to be ready
+sleep 5
 
-# 2. Deploy all models (timeplus-sqlmesh must be installed)
+# 3. Create Kafka topic
+docker exec e2e_kafka kafka-topics --bootstrap-server localhost:9092 \
+  --create --if-not-exists \
+  --topic e2e_events \
+  --partitions 3 \
+  --replication-factor 1
+
+# 4. Deploy all models (timeplus-sqlmesh must be installed)
 sqlmesh plan --auto-apply
 
-# 3. Generate test data
-python scripts/generate_data.py --duration 10 --rate 60
+# 5. Generate test data
+python scripts/generate_data.py --duration 60 --rate 60
 
-# 4. Verify results in ClickHouse
 docker exec e2e_clickhouse clickhouse-client --query \
-  "SELECT * FROM default.e2e_aggregation_results ORDER BY win_start DESC LIMIT 10"
+    "SELECT count() FROM default.e2e_aggregation_results"
+
 ```
 
 ## Architecture (Simplified)

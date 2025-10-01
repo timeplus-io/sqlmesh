@@ -1,0 +1,33 @@
+# SQLMesh Configuration for Timeplus E2E Example
+project: timeplus_e2e_example
+
+# Use stable names in production (no versioning)
+virtual_environment_mode: dev_only
+
+gateways:
+  local:
+    connection:
+      type: timeplus
+      host: localhost
+      port: 3218  # Timeplus HTTP Streaming port
+      username: default
+      password: ""
+      database: default
+    state_connection:
+      type: duckdb
+      database: ./sqlmesh_state.db
+
+  clickhouse_local:
+    connection:
+      type: clickhouse
+      host: localhost
+      port: 8124  # ClickHouse HTTP port (mapped from 8123)
+      username: default
+      password: ""
+    state_connection:
+      type: duckdb
+      database: ./sqlmesh_state.db
+
+model_defaults:
+  dialect: timeplus
+  start: 2024-01-01

@@ -12,13 +12,14 @@ from sqlmesh.core.config.connection import (
     ConnectionConfig,
     DatabricksConnectionConfig,
     DuckDBAttachOptions,
-    FabricConnectionConfig,
     DuckDBConnectionConfig,
+    FabricConnectionConfig,
     GCPPostgresConnectionConfig,
     MotherDuckConnectionConfig,
     MySQLConnectionConfig,
     PostgresConnectionConfig,
     SnowflakeConnectionConfig,
+    TimeplusConnectionConfig,
     TrinoAuthenticationMethod,
     AthenaConnectionConfig,
     MSSQLConnectionConfig,
@@ -1707,6 +1708,22 @@ def test_mssql_pyodbc_connection_negative_timezone_offset():
         expected_dt = datetime(2023, 1, 1, 12, 0, 0, 0, timezone(timedelta(hours=-8, minutes=0)))
         assert result == expected_dt
         assert result.tzinfo == timezone(timedelta(hours=-8))
+
+
+def test_timeplus_connection_config_defaults(make_config):
+    """Test Timeplus connection config defaults."""
+    config = make_config(
+        type="timeplus",
+        host="localhost",
+        username="default",
+        check_import=False,
+    )
+    assert isinstance(config, TimeplusConnectionConfig)
+    assert config.port == 8463  # Default Timeplus HTTP port
+    assert config.concurrent_tasks == 1
+    assert config.use_compression is True
+    assert config.type_ == "timeplus"
+    assert config.is_forbidden_for_state_sync is True  # Should be forbidden for state sync
 
 
 def test_fabric_connection_config_defaults(make_config):

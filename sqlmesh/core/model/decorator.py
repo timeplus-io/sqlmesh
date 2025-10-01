@@ -120,7 +120,7 @@ class model(registry_decorator):
             if not blueprints:
                 raise_config_error("Failed to render blueprints property", path)
 
-            if len(blueprints) > 1:
+            if blueprints and len(blueprints) > 1:
                 blueprints = [exp.Tuple(expressions=blueprints)]
 
             blueprints = blueprints[0]

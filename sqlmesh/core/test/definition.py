@@ -923,7 +923,7 @@ def generate_test(
                 ctes[cte.alias] = (
                     pandas_timestamp_to_pydatetime(
                         cte_output.apply(lambda col: col.map(_normalize_df_value)),
-                        cte_query.named_selects,
+                        None,
                     )
                     .replace({np.nan: None})
                     .to_dict(orient="records")

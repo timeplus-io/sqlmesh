@@ -56,6 +56,7 @@ FORBIDDEN_STATE_SYNC_ENGINES = {
     "trino",
     # Nullable types are problematic
     "clickhouse",
+    "timeplus",  # Same nullable issues as ClickHouse
 }
 MOTHERDUCK_TOKEN_REGEX = re.compile(r"(\?|\&)(motherduck_token=)(\S*)")
 
@@ -2232,6 +2233,115 @@ class AthenaConnectionConfig(ConnectionConfig):
 
     def get_catalog(self) -> t.Optional[str]:
         return self.catalog_name
+
+
+class TimeplusConnectionConfig(ConnectionConfig):
+    """
+    Timeplus/Proton Connection Configuration.
+
+    Timeplus is a streaming database forked from ClickHouse.
+    """
+
+    host: str
+    username: str
+    password: t.Optional[str] = None
+    port: int = 8463  # Timeplus default HTTP port
+    database: t.Optional[str] = None
+    connect_timeout: int = 10
+    send_receive_timeout: int = 300
+    query_limit: int = 0
+    use_compression: bool = True
+    compression_method: t.Optional[str] = None
+    connection_settings: t.Optional[t.Dict[str, t.Any]] = None
+    http_proxy: t.Optional[str] = None
+    # HTTPS/TLS settings
+    verify: bool = True
+    ca_cert: t.Optional[str] = None
+    client_cert: t.Optional[str] = None
+    client_cert_key: t.Optional[str] = None
+    https_proxy: t.Optional[str] = None
+    server_host_name: t.Optional[str] = None
+    tls_mode: t.Optional[str] = None
+
+    concurrent_tasks: int = 1
+    register_comments: bool = True
+    pre_ping: bool = False
+
+    type_: t.Literal["timeplus"] = Field(alias="type", default="timeplus")
+    DIALECT: t.ClassVar[t.Literal["timeplus"]] = "timeplus"
+    DISPLAY_NAME: t.ClassVar[t.Literal["Timeplus"]] = "Timeplus"
+    DISPLAY_ORDER: t.ClassVar[t.Literal[15]] = 15
+
+    @property
+    def _connection_kwargs_keys(self) -> t.Set[str]:
+        return {
+            "host",
+            "username",
+            "password",
+            "port",
+            "database",
+            "connect_timeout",
+            "send_receive_timeout",
+            "query_limit",
+            # Note: use_compression and compression_method are not supported by timeplus-connect
+            "http_proxy",
+            "verify",
+            "ca_cert",
+            "client_cert",
+            "client_cert_key",
+            "https_proxy",
+            "server_host_name",
+            "tls_mode",
+        }
+
+    @property
+    def _engine_adapter(self) -> t.Type[EngineAdapter]:
+        return engine_adapter.TimeplusEngineAdapter
+
+    @property
+    def _connection_factory(self) -> t.Callable:
+        # Use timeplus-connect driver (forked from clickhouse-connect)
+        try:
+            from timeplus_connect.dbapi import connect  # type: ignore
+            from timeplus_connect.driver import httputil  # type: ignore
+        except ImportError:
+            raise ConfigError(
+                "Timeplus connection requires the 'timeplus-connect' package. "
+                "Install it with: pip install timeplus-connect"
+            )
+        from functools import partial
+
+        pool_manager_options: t.Dict[str, t.Any] = dict(
+            maxsize=self.concurrent_tasks,
+            block=True,
+            verify=self.verify,
+            ca_cert=self.ca_cert,
+            client_cert=self.client_cert,
+            client_cert_key=self.client_cert_key,
+            https_proxy=self.https_proxy,
+        )
+        if self.server_host_name:
+            pool_manager_options["server_hostname"] = self.server_host_name
+            if self.verify:
+                pool_manager_options["assert_hostname"] = self.server_host_name
+        if hasattr(self, "connection_pool_options") and self.connection_pool_options:
+            pool_manager_options.update(self.connection_pool_options)
+        pool_mgr = httputil.get_pool_manager(**pool_manager_options)
+
+        return partial(connect, pool_mgr=pool_mgr)
+
+    @property
+    def _static_connection_kwargs(self) -> t.Dict[str, t.Any]:
+        from sqlmesh import __version__
+
+        settings = self.connection_settings or {}
+
+        # Note: timeplus-connect doesn't support compression settings
+        # so we don't pass compress parameter
+        return {
+            "client_name": f"SQLMesh/{__version__}",
+            **settings,
+        }
 
 
 class RisingwaveConnectionConfig(ConnectionConfig):

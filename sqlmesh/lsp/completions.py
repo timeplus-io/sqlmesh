@@ -81,7 +81,8 @@ def get_macros(
     try:
         if context is not None:
             for name, m in context.context._macros.items():
-                macros[name] = getattr(m.func, "__doc__", None)
+                if hasattr(m, "func"):
+                    macros[name] = getattr(m.func, "__doc__", None)
     except Exception:
         pass
 

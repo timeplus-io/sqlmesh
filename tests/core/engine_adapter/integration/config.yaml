@@ -1,5 +1,17 @@
 gateways:
 
+  inttest_timeplus:
+    connection:
+      type: timeplus
+      host: {{ env_var('DOCKER_HOSTNAME', 'localhost') }}
+      port: 8463
+      username: default
+      password: ""
+      database: default
+      concurrent_tasks: 1
+    state_connection:
+      type: duckdb
+
   inttest_duckdb:
     connection:
       type: duckdb

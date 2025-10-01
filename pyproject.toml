@@ -1,9 +1,12 @@
 [project]
-name = "sqlmesh"
+name = "timeplus-sqlmesh"
 dynamic = ["version"]
-description = "Next-generation data transformation framework"
+description = "SQLMesh with Timeplus streaming database support - Next-generation data transformation framework"
 readme = "README.md"
-authors = [{ name = "TobikoData Inc.", email = "engineering@tobikodata.com" }]
+authors = [
+    { name = "Timeplus", email = "help@timeplus.com" },
+    { name = "TobikoData Inc.", email = "engineering@tobikodata.com" }
+]
 license = { file = "LICENSE" }
 requires-python = ">= 3.9"
 dependencies = [
@@ -24,7 +27,7 @@ dependencies = [
     "requests",
     "rich[jupyter]",
     "ruamel.yaml",
-    "sqlglot[rs]~=27.19.0",
+    "timeplus-sqlglot[rs]>=0.1.0",
     "tenacity",
     "time-machine",
     "json-stream"
@@ -51,11 +54,13 @@ bigquery = [
 # pinned an older SQLGlot which is incompatible with SQLMesh
 bigframes = ["bigframes>=1.32.0"]
 clickhouse = ["clickhouse-connect"]
+timeplus = ["timeplus-connect"]
 databricks = ["databricks-sql-connector[pyarrow]"]
 dev = [
     "agate",
     "beautifulsoup4",
     "clickhouse-connect",
+    "timeplus-connect",
     "cryptography<46.0.0",
     "databricks-sql-connector",
     "dbt-bigquery",
@@ -152,10 +157,11 @@ sqlmesh_cicd = "sqlmesh.cicd.bot:bot"
 sqlmesh_lsp = "sqlmesh.lsp.main:main"
 
 [project.urls]
-Homepage = "https://sqlmesh.com/"
-Documentation = "https://sqlmesh.readthedocs.io/en/stable/"
-Repository = "https://github.com/TobikoData/sqlmesh"
-Issues = "https://github.com/TobikoData/sqlmesh/issues"
+Homepage = "https://www.timeplus.com/"
+Documentation = "https://docs.timeplus.com/"
+Repository = "https://github.com/timeplus-io/sqlmesh"
+Issues = "https://github.com/timeplus-io/sqlmesh/issues"
+"Upstream SQLMesh" = "https://github.com/TobikoData/sqlmesh"
 
 [build-system]
 requires = ["setuptools >= 61.0", "setuptools_scm"]

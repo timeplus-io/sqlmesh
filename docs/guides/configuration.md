@@ -907,6 +907,7 @@ These pages describe the connection configuration options for each execution eng
 
 * [Athena](../integrations/engines/athena.md)
 * [BigQuery](../integrations/engines/bigquery.md)
+* [ClickHouse](../integrations/engines/clickhouse.md)
 * [Databricks](../integrations/engines/databricks.md)
 * [DuckDB](../integrations/engines/duckdb.md)
 * [Fabric](../integrations/engines/fabric.md)
@@ -916,8 +917,10 @@ These pages describe the connection configuration options for each execution eng
 * [Postgres](../integrations/engines/postgres.md)
 * [GCP Postgres](../integrations/engines/gcp-postgres.md)
 * [Redshift](../integrations/engines/redshift.md)
+* [RisingWave](../integrations/engines/risingwave.md)
 * [Snowflake](../integrations/engines/snowflake.md)
 * [Spark](../integrations/engines/spark.md)
+* [Timeplus](../integrations/engines/timeplus.md)
 * [Trino](../integrations/engines/trino.md)
 
 #### State connection
